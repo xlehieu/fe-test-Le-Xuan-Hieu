@@ -16,6 +16,11 @@ createRoot(document.getElementById("root")!).render(
             colorPrimary: "#4f46e5",
             borderRadius: 10,
           },
+          components:{
+            Table:{
+              headerBg:"#eaeaea"
+            }
+          }
         }}
       >
         <App />

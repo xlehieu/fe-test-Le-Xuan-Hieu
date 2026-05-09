@@ -1,12 +1,12 @@
-import { selectTaskStats } from "@/features/tasks/taskSlice";
+import { selectTaskStats } from "@/features/tasks/slices/taskSlice";
 import { useAppSelector } from "@/store/hooks";
 import { Card, Statistic, Row, Col } from "antd";
 import {
-  LayoutGrid,
-  ClipboardList,
-  RefreshCcw,
-  CheckCircle2,
-} from "lucide-react";
+  AppstoreOutlined,
+  UnorderedListOutlined,
+  ReloadOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import { memo } from "react";
 
 const DashboardStats= memo(()=> {
@@ -16,13 +16,13 @@ const DashboardStats= memo(()=> {
     {
       title: "Tổng tasks",
       value: total,
-      icon: <LayoutGrid size={22} color="#fff" />,
+      icon: <AppstoreOutlined style={{fontSize:22}} color="#fff" />,
       className: "bg-gradient-to-r from-blue-500 to-blue-300 shadow-blue-500/30",
     },
     {
       title: "Todo",
       value: todo,
-      icon: <ClipboardList size={22} color="#fff" />,
+      icon: <UnorderedListOutlined style={{fontSize:22}} color="#fff" />,
       className:
         "bg-gradient-to-r from-amber-500 to-yellow-300 shadow-amber-500/30",
     },
@@ -30,14 +30,14 @@ const DashboardStats= memo(()=> {
       title: "In progress",
       value: inProgress,
       icon: (
-        <RefreshCcw size={22} color="#fff" className="animate-spin-slow" />
+        <ReloadOutlined style={{fontSize:22}} color="#fff" className="animate-spin-slow" />
       ),
       className: "bg-gradient-to-r from-cyan-600 to-cyan-300 shadow-cyan-600/30",
     },
     {
       title: "Done",
       value: done,
-      icon: <CheckCircle2 size={22} color="#fff" />,
+      icon: <CheckCircleOutlined style={{fontSize:22}} color="#fff" />,
       className:
         "bg-gradient-to-r from-emerald-500 to-green-300 shadow-emerald-500/30",
     },

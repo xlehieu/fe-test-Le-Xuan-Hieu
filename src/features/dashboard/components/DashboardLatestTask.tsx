@@ -1,12 +1,14 @@
-import React, { memo, useMemo } from "react";
-import { Table, Tag, Typography, Card } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { selectLatestTasks } from "@/features/tasks/slices/taskSlice";
 import { useAppSelector } from "@/store/hooks";
-import { selectLatestTasks } from "@/features/tasks/taskSlice";
+import { Task } from "@/types/task.type";
+import {
+  CalendarOutlined
+} from "@ant-design/icons";
+import { Card, Table, Tag, Typography } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Calendar } from "lucide-react";
-import { Task } from "@/types/task.type";
+import { memo, useMemo } from "react";
 
 // Kích hoạt plugin hiển thị thời gian tương đối (ví dụ: 5 phút trước)
 dayjs.extend(relativeTime);
@@ -67,7 +69,7 @@ const DashboardLatestTask = memo(() => {
     <Card
       title={
         <div className="flex items-center gap-2">
-          <Calendar size={18} className="text-blue-500" />
+          <CalendarOutlined className="text-blue-500" />
           <span>5 tasks mới nhất</span>
         </div>
       }

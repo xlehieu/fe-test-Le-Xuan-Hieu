@@ -3,7 +3,6 @@ import { RootState } from '@/store';
 import { Task } from '@/types/task.type';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
-
 interface TasksState {
   items: Task[];
   filters: {

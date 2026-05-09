@@ -1,4 +1,4 @@
-import { selectTaskStats } from "@/features/tasks/taskSlice";
+import { selectTaskStats } from "@/features/tasks/slices/taskSlice";
 import { useAppSelector } from "@/store/hooks";
 import { Card, Tooltip } from "antd";
 import { memo, useMemo } from "react";

@@ -1,4 +1,4 @@
-import taskReducer from "@/features/tasks/taskSlice";
+import taskReducer from "@/features/tasks/slices/taskSlice";
 import { configureStore } from "@reduxjs/toolkit";
 
 export const store = configureStore({

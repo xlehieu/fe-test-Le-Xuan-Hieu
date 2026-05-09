@@ -1,20 +1,23 @@
-import { useAppSelector } from "@/store/hooks";
+import TableAction from "@/components/ui/TableAction";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Task } from "@/types/task.type";
-import { Button, Space, Table, Tag, Tooltip, Typography } from "antd";
+import { delay } from "@/utils/helpers";
+import { AppstoreOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, message, Popconfirm, Select, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
-import {
-  AppstoreOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
 import { useCallback, useMemo, useState } from "react";
-import { selectAllTasks } from "../slices/taskSlice";
+import {
+  deleteManyTasks,
+  deleteTask,
+  selectPaginatedTasks,
+  setPage,
+  updateTaskStatus
+} from "../slices/taskSlice";
 import TaskModal from "./TaskModal";
 import TaskPriorityTag from "./TaskPriorityTag";
 import TaskStatusTag from "./TaskStatusTag";
-import TableAction from "@/components/ui/TableAction";
 
 const { Text } = Typography;
 
@@ -22,9 +25,39 @@ const { Text } = Typography;
 const priorityWeight = { low: 1, medium: 2, high: 3 };
 
 const TaskList = () => {
-  const tasks = useAppSelector(selectAllTasks);
+  // khúc này cho em xin phép đặt cả total nữa ạ cho giống api thật ạ
+  // hiển thị ở table cũng dễ hơn ạ
+  const { data: taskList, total } = useAppSelector(selectPaginatedTasks);
   const [taskDetail, setTaskDetail] = useState<Partial<Task> | null>(null);
-
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const handleConfirmDelete = useCallback(
+    async (data: Task) => {
+      try {
+        await delay();
+        dispatch(deleteTask(data.id));
+      } catch (err) {
+        message.error("Xóa thất bại");
+      }
+    },
+    [dispatch],
+  );
+  const handleDeleteSelected = useCallback(async () => {
+    try {
+      await delay();
+      dispatch(deleteManyTasks(selectedRowKeys));
+    } catch (err) {
+      message.error("Xóa nhiều task thất bại");
+    }
+  }, [dispatch, selectedRowKeys]);
+  const rowSelection: TableRowSelection<Task> = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      setSelectedRowKeys(newSelectedRowKeys as string[]);
+    },
+    selections: true,
+  };
+  //region config columns
   const columns = useMemo<ColumnsType<Task>>(
     () => [
       {
@@ -43,8 +76,40 @@ const TaskList = () => {
         title: "Trạng thái",
         dataIndex: "status",
         key: "status",
-        width: 130,
-        render: (status: Task["status"]) => <TaskStatusTag status={status} />,
+        width: 180,
+
+        render: (status: Task["status"], record) => (
+          <Select
+            value={status}
+            size="small"
+            className="w-full"
+            onChange={(value: Task["status"]) => {
+              try {
+                dispatch(
+                  updateTaskStatus({
+                    id: record.id,
+                    status: value,
+                  }),
+                );
+                message.success("Cập nhật trạng thái thành công");
+              } catch (err) {}
+            }}
+            options={[
+              {
+                value: "todo",
+                label: <TaskStatusTag status="todo" />,
+              },
+              {
+                value: "in_progress",
+                label: <TaskStatusTag status="in_progress" />,
+              },
+              {
+                value: "done",
+                label: <TaskStatusTag status="done" />,
+              },
+            ]}
+          />
+        ),
       },
       {
         title: "Độ ưu tiên",
@@ -72,7 +137,7 @@ const TaskList = () => {
         ),
       },
       {
-        title: "Ngày đến hạn",
+        title: "Hạn chót",
         dataIndex: "dueDate",
         key: "dueDate",
         width: 150,
@@ -111,13 +176,15 @@ const TaskList = () => {
         render: (_, record) => (
           <TableAction
             record={record}
-            onClickEdit={() => {}}
-            onClickDelete={() => {}}
+            onClickEdit={(data) => {
+              setTaskDetail(data);
+            }}
+            onConfirmDelete={handleConfirmDelete}
           />
         ),
       },
     ],
-    [setTaskDetail],
+    [setTaskDetail, handleConfirmDelete],
   );
   const handleCancelModal = useCallback(() => {
     setTaskDetail(null);
@@ -128,33 +195,51 @@ const TaskList = () => {
         <h2 className="text-xl font-bold text-slate-800">
           Danh sách công việc
         </h2>
-        {/* Nút Thêm mới nếu cần */}
-        <Button
-          type="primary"
-          className="rounded-lg"
-          onClick={() => {
-            setTaskDetail({});
-          }}
-        >
-          <PlusOutlined /> Thêm Task
-        </Button>
+        <div className="flex gap-2">
+          {selectedRowKeys.length > 0 && (
+            <Popconfirm
+              title="Xóa dữ liệu"
+              description="Bạn có chắc muốn xóa không?"
+              okText="Xóa"
+              cancelText="Hủy"
+              onConfirm={handleDeleteSelected}
+            >
+              <Button danger>Xóa {selectedRowKeys.length} task</Button>
+            </Popconfirm>
+          )}
+
+          <Button
+            type="primary"
+            className="rounded-lg"
+            onClick={() => {
+              setTaskDetail({});
+            }}
+          >
+            <PlusOutlined /> Thêm Task
+          </Button>
+        </div>
       </div>
 
       <Table
         columns={columns}
-        dataSource={tasks}
+        dataSource={taskList}
+        rowSelection={rowSelection}
         rowKey="id"
         // Cấu hình phân trang theo yêu cầu
         pagination={{
           pageSize: 10,
+          total,
           showTotal: (total) => (
             <span className="font-medium text-slate-500">
               Tổng số: {total} bản ghi
             </span>
           ),
-          showSizeChanger: false, // Tắt chức năng chọn số item/trang nếu chỉ fix cứng 10
+          onChange(page) {
+            dispatch(setPage(page));
+          },
+          showSizeChanger: false,
         }}
-        scroll={{ x: 800 }} // Đảm bảo không vỡ layout trên mobile
+        scroll={{ x: 800 }}
         className="custom-table"
       />
       <TaskModal

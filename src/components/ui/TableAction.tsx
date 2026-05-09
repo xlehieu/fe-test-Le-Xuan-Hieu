@@ -5,41 +5,48 @@ import React, { memo } from "react";
 type TableActionProps<T> = {
   record: T;
   onClickEdit: (record: T) => void | Promise<void>;
-  onClickDelete: (record: T) => void | Promise<void>;
+  onConfirmDelete: (record: T) => void | Promise<void>;
+  allowEdit?: boolean;
+  allowDelete?: boolean;
 };
 
 const TableAction = <T,>({
   record,
   onClickEdit,
-  onClickDelete,
+  onConfirmDelete,
+  allowEdit = true,
+  allowDelete = true,
 }: TableActionProps<T>) => {
   return (
     <Space size="middle">
-      <Tooltip title="Chỉnh sửa">
-        <Button
-          type="text"
-          icon={<EditOutlined className="text-blue-500" />}
-          onClick={() => onClickEdit(record)}
-          className="hover:bg-blue-50"
-        />
-      </Tooltip>
-
-      <Tooltip title="Xóa">
-        <Popconfirm
-          title="Xóa dữ liệu"
-          description="Bạn có chắc muốn xóa không?"
-          okText="Xóa"
-          cancelText="Hủy"
-          onConfirm={() => onClickDelete(record)}
-        >
+      {allowEdit && (
+        <Tooltip title="Chỉnh sửa">
           <Button
             type="text"
-            danger
-            icon={<DeleteOutlined />}
-            className="hover:bg-red-50"
+            icon={<EditOutlined className="text-blue-500" />}
+            onClick={() => onClickEdit(record)}
+            className="hover:bg-blue-50"
           />
-        </Popconfirm>
-      </Tooltip>
+        </Tooltip>
+      )}
+      {allowDelete && (
+        <Tooltip title="Xóa">
+          <Popconfirm
+            title="Xóa dữ liệu"
+            description="Bạn có chắc muốn xóa không?"
+            okText="Xóa"
+            cancelText="Hủy"
+            onConfirm={async() => await onConfirmDelete(record)}
+          >
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              className="hover:bg-red-50"
+            />
+          </Popconfirm>
+        </Tooltip>
+      )}
     </Space>
   );
 };

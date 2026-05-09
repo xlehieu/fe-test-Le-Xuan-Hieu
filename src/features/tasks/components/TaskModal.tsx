@@ -1,22 +1,27 @@
 import React, { memo, useEffect, useState } from "react";
-import { Modal, Form, Input, Select, DatePicker, message } from "antd";
+import { Modal, Form, Input, Select, DatePicker, message, Tag } from "antd";
 import dayjs from "dayjs";
 import { Task, TaskPayload } from "@/types/task.type";
 import { useAppDispatch } from "@/store/hooks";
-import { addTask, updateTask } from "../slices/taskSlice"; 
+import { addTask, updateTask } from "../slices/taskSlice";
 import { delay } from "@/utils/helpers";
 import { v7 as uuidv7 } from "uuid";
+import { taskPriorityConfig, taskStatusConfig } from "../constants/taskConst";
 interface TaskModalProps {
-  open: boolean; // Đã mở lại prop này để control Modal chính xác hơn
+  open: boolean;
   onCancel: () => void;
   initialData?: Partial<Task> | null;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ open, onCancel, initialData }) => {
+const TaskModal: React.FC<TaskModalProps> = ({
+  open,
+  onCancel,
+  initialData,
+}) => {
   const isEdit = !!initialData?.id;
   const [form] = Form.useForm<TaskPayload>();
   const dispatch = useAppDispatch();
-  
+
   // State quản lý hiệu ứng loading khi bấm Lưu
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,22 +41,19 @@ const TaskModal: React.FC<TaskModalProps> = ({ open, onCancel, initialData }) =>
       }
     }
   }, [open, initialData, form]);
-
+  //region onFinish
   const onFinish = async (value: TaskPayload) => {
-    setIsSubmitting(true);
-    await delay(1000)
     try {
-      
-
+      setIsSubmitting(true);
+      await delay();
       if (isEdit && initialData?.id) {
-        // Cập nhật: Giữ nguyên ID cũ
         dispatch(
           updateTask({
-            id: initialData.id, 
+            id: initialData.id,
             ...value,
-            createdAt:initialData.createdAt!,
+            createdAt: initialData.createdAt!,
             dueDate: value.dueDate ? value.dueDate.toISOString() : undefined,
-          })
+          }),
         );
         message.success("Cập nhật công việc thành công!");
       } else {
@@ -61,17 +63,17 @@ const TaskModal: React.FC<TaskModalProps> = ({ open, onCancel, initialData }) =>
             createdAt: dayjs().toISOString(),
             ...value,
             dueDate: value.dueDate ? value.dueDate.toISOString() : undefined,
-          })
+          }),
         );
         message.success("Thêm công việc mới thành công!");
       }
-      
+
       onCancel();
     } catch (error) {
       console.error(error);
       message.error("Có lỗi xảy ra, vui lòng thử lại!");
     } finally {
-      setIsSubmitting(false); // Luôn tắt loading
+      setIsSubmitting(false);
     }
   };
 
@@ -106,11 +108,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ open, onCancel, initialData }) =>
             label="Trạng thái"
             rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
           >
-            <Select size="large">
-              <Select.Option value="todo">TO DO</Select.Option>
-              <Select.Option value="in_progress">IN PROGRESS</Select.Option>
-              <Select.Option value="done">DONE</Select.Option>
-            </Select>
+            <Select
+              size="large"
+              options={Object.entries(taskStatusConfig).map(
+                ([value, config]) => ({
+                  value,
+                  label: <Tag color={config.color}>{config.labelVi} ({config.label})</Tag>,
+                }),
+              )}
+            />
           </Form.Item>
 
           <Form.Item<TaskPayload>
@@ -118,11 +124,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ open, onCancel, initialData }) =>
             label="Độ ưu tiên"
             rules={[{ required: true, message: "Vui lòng chọn độ ưu tiên!" }]}
           >
-            <Select size="large">
-              <Select.Option value="low">Low (Thấp)</Select.Option>
-              <Select.Option value="medium">Medium (Trung bình)</Select.Option>
-              <Select.Option value="high">High (Cao)</Select.Option>
-            </Select>
+            <Select
+              size="large"
+              options={Object.entries(taskPriorityConfig).map(
+                ([value, config]) => ({
+                  value,
+                  label: <Tag color={config.color}>{config.labelVi} ({config.label})</Tag>,
+                }),
+              )}
+            />
           </Form.Item>
         </div>
 
@@ -131,7 +141,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ open, onCancel, initialData }) =>
             <Input placeholder="Nhập tên người thực hiện..." size="large" />
           </Form.Item>
 
-          <Form.Item<TaskPayload> name="dueDate" label="Ngày đến hạn">
+          <Form.Item<TaskPayload> name="dueDate" label="Hạn chót">
             <DatePicker
               className="w-full"
               size="large"

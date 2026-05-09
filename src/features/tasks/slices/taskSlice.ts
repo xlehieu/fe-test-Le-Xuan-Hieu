@@ -109,8 +109,17 @@ export const selectPaginatedTasks = createSelector(
   [selectFilteredTasks, selectPagination],
   (filteredTasks, pagination) => {
     const { currentPage, pageSize } = pagination;
+
     const startIndex = (currentPage - 1) * pageSize;
-    return filteredTasks.slice(startIndex, startIndex + pageSize);
+
+    // khúc này cho em xin phép đặt cả total nữa ạ cho giống api thật ạ
+    // hiển thị ở table cũng dễ hơn ạ
+    return {
+      data: filteredTasks.slice(startIndex, startIndex + pageSize),
+      total: filteredTasks.length,
+      currentPage,
+      pageSize,
+    };
   }
 );
 

@@ -29,11 +29,11 @@ const AntProvider = ({ children }: { children: React.ReactNode }) => {
         components: {
           Table: {
             headerBg: !isDark ?"#eaeaea":undefined,
-            colorBgContainer: isDark ? bgDarkColor : undefined,
+            colorBgContainer: isDark ? bgDarkColor : "#fff",
           },
-          Layout:{
-            bodyBg: isDark?bgDarkColor:undefined
-          },
+          // Layout:{
+          //   bodyBg: isDark?bgDarkColor:undefined
+          // },
         },
       }}
     >

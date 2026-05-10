@@ -24,7 +24,7 @@ const DashboardAnalytics = memo(() => {
       <div className="flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex-1 w-full">
           <div className="flex justify-between mb-3">
-            <h3 className="text-base font-bold text-slate-800">
+            <h3 className="text-base font-bold text-slate-800 dark:text-white">
               Tỷ lệ theo trạng thái
             </h3>
             <span className="text-slate-400 text-sm font-medium">{total} tasks</span>
@@ -57,22 +57,22 @@ const DashboardAnalytics = memo(() => {
             <div className="flex items-center space-x-2">
               <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
               <div className="flex flex-col">
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">To Do</span>
-                <span className="text-base font-bold text-slate-700">{Math.round(todoP)}%</span>
+                <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold dark:text-white">Cần làm</span>
+                <span className="text-base font-bold text-slate-700 dark:text-white">{Math.round(todoP)}%</span>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
               <div className="flex flex-col">
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">In progress</span>
-                <span className="text-base font-bold text-slate-700">{Math.round(progressP)}%</span>
+                <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold dark:text-white">Đang thực hiện</span>
+                <span className="text-base font-bold text-slate-700 dark:text-white">{Math.round(progressP)}%</span>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
               <div className="flex flex-col">
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Done</span>
-                <span className="text-base font-bold text-slate-700">{Math.round(doneP)}%</span>
+                <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold dark:text-white">Hoàn thành</span>
+                <span className="text-base font-bold text-slate-700 dark:text-white">{Math.round(doneP)}%</span>
               </div>
             </div>
           </div>

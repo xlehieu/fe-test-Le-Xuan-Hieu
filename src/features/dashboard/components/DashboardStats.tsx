@@ -20,14 +20,14 @@ const DashboardStats= memo(()=> {
       className: "bg-gradient-to-r from-blue-500 to-blue-300 shadow-blue-500/30",
     },
     {
-      title: "Todo",
+      title: "Cần làm",
       value: todo,
       icon: <UnorderedListOutlined style={{fontSize:22}} color="#fff" />,
       className:
         "bg-gradient-to-r from-amber-500 to-yellow-300 shadow-amber-500/30",
     },
     {
-      title: "In progress",
+      title: "Đang thực hiện",
       value: inProgress,
       icon: (
         <ReloadOutlined style={{fontSize:22}} color="#fff" className="animate-spin-slow" />
@@ -35,7 +35,7 @@ const DashboardStats= memo(()=> {
       className: "bg-gradient-to-r from-cyan-600 to-cyan-300 shadow-cyan-600/30",
     },
     {
-      title: "Done",
+      title: "Hoàn thành",
       value: done,
       icon: <CheckCircleOutlined style={{fontSize:22}} color="#fff" />,
       className:

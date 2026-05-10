@@ -91,7 +91,7 @@ const TaskList = () => {
         render: (text) => (
           <Text
             strong
-            className="text-slate-700 hover:text-blue-600 transition-colors"
+            className="text-slate-700 dark:text-white transition-colors"
           >
             {text}
           </Text>

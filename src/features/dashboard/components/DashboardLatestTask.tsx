@@ -25,7 +25,7 @@ const DashboardLatestTask = memo(() => {
         dataIndex: "title",
         key: "title",
         render: (text) => (
-          <Text strong className="text-slate-700">
+          <Text strong className="text-slate-700 dark:text-white">
             {text}
           </Text>
         ),

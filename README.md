@@ -35,3 +35,10 @@ npm run quick-preview
 - **Custom hook**
     - Custom hook useOnChangeDebounce để khi onChange value, debounce xong thì gọi callback => lợi ích đỡ phải đặt thêm state, useDebounce, useEffect có dependencies là valueDebounce
     - Custom hook useTheme để lấy theme từ localstorage return về hàm toggle và isDark và add class dark vào thẻ html => Tailwind có thể dùng, ConfigProvider Antd cũng dùng
+
+
+## Demo các chức năng chính
+![demo](./docs/demo-main-feat.gif)
+
+## Demo chức năng toggle dark mode
+![demo](./docs/demo-theme-feat.gif)

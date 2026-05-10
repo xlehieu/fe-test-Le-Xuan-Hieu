@@ -1,3 +1,4 @@
+import TaskStatusTag from "@/features/tasks/components/TaskStatusTag";
 import { taskStatusMap } from "@/features/tasks/constants/taskConst";
 import { selectLatestTasks } from "@/features/tasks/slices/taskSlice";
 import { useAppSelector } from "@/store/hooks";
@@ -20,7 +21,7 @@ const DashboardLatestTask = memo(() => {
   const columns = useMemo<ColumnsType<Task>>(
     () => [
       {
-        title: "Task",
+        title: "Tiêu đề",
         dataIndex: "title",
         key: "title",
         render: (text) => (
@@ -34,21 +35,12 @@ const DashboardLatestTask = memo(() => {
         dataIndex: "status",
         key: "status",
         width: 120,
-        render: (status: Task["status"]) => {
-          const config = taskStatusMap[status];
-
-          return (
-            <Tag color={config.color} className="rounded-full px-3 font-medium">
-              {config.labelVi}
-            </Tag>
-          );
-        },
+        render: (status: Task["status"]) => <TaskStatusTag status={status}/>
       },
       {
         title: "Thời gian tạo",
         dataIndex: "createdAt",
         key: "createdAt",
-        responsive: ["md"],
         render: (time) => (
           <Text type="secondary" className="text-xs">
             {dayjs(time).fromNow()}

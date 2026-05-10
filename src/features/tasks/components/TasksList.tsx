@@ -39,6 +39,7 @@ const priorityWeight = { low: 1, medium: 2, high: 3 };
 
 const TaskList = () => {
   const { data: taskList, total } = useAppSelector(selectPaginatedTasks);
+  const currentPage=useAppSelector(state=>state.tasks.pagination.currentPage)
   const [taskDetail, setTaskDetail] = useState<Partial<Task> | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const dispatch = useAppDispatch();
@@ -180,7 +181,7 @@ const TaskList = () => {
       {
         title: (
           <div className="flex justify-center">
-            <AppstoreOutlined />
+            <AppstoreOutlined style={{fontSize:18}}/>
           </div>
         ),
         key: "actions",
@@ -250,7 +251,7 @@ const TaskList = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+      <div className="bg-white rounded-xl border border-slate-200/60 dark:bg-[var(--bg-dark)] dark:border-slate-900 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
         <Table
           columns={columns}
           dataSource={taskList}
@@ -259,6 +260,7 @@ const TaskList = () => {
           pagination={{
             pageSize: 10,
             total,
+            current:currentPage,
             showTotal: (total) => (
               <span className="text-sm font-medium text-slate-500">
                 Hiển thị {Math.min(10, total)} / {total} bản ghi

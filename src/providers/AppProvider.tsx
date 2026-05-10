@@ -2,11 +2,14 @@ import { store } from "@/store";
 import React from "react";
 import { Provider } from "react-redux";
 import AntProvider from "./AntProvider";
+import { ThemeProvider } from "./ThemeProvider";
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
-      <AntProvider>{children}</AntProvider>
+      <ThemeProvider>
+        <AntProvider>{children}</AntProvider>
+      </ThemeProvider>
     </Provider>
   );
 };

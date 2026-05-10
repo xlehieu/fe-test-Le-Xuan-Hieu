@@ -14,6 +14,8 @@ import { useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 import { ROUTE } from "@/routes/route.config";
+import ThemeToggle from "@/components/ui/ThemeToggle";
+import { useTheme } from "@/providers/ThemeProvider";
 
 const { Header, Sider, Content } = Layout;
 
@@ -36,15 +38,22 @@ function AdminDashboardLayout() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
-
   const menuItems: MenuProps["items"] = sidebarItems.map((item) => ({
     key: item.href,
-    icon: item.icon,
-    label: (
-      <Link to={item.href} onClick={() => setOpenMobile(false)}>
-        {item.title}
-      </Link>
-    ),
+   icon: (
+    <span className="dark:!text-white">
+      {item.icon}
+    </span>
+  ),
+  label: (
+    <Link 
+      to={item.href} 
+      onClick={() => setOpenMobile(false)}
+      className="dark:!text-white"
+    >
+      {item.title}
+    </Link>
+  ),
   }));
 
   const title = useMemo(() => {
@@ -52,7 +61,7 @@ function AdminDashboardLayout() {
   }, [pathname]);
 
   return (
-    <Layout className="min-h-screen bg-[#f5f7fb]">
+    <Layout className="min-h-screen ">
       {/* Desktop */}
       <Sider
         trigger={null}
@@ -60,7 +69,7 @@ function AdminDashboardLayout() {
         collapsed={collapsed}
         width={260}
         collapsedWidth={80}
-        className="hidden lg:block bg-white shadow-sm sticky top-0 h-screen"
+        className="hidden lg:block shadow-sm sticky top-0 h-screen bg-white dark:bg-[var(--bg-dark)]"
       >
         <div className="h-16 flex items-center justify-center px-5 font-bold text-indigo-600 transition-all duration-300">
           {collapsed ? (
@@ -86,6 +95,7 @@ function AdminDashboardLayout() {
         width={280}
         closable={false}
         styles={{ body: { padding: 0 } }}
+        className="dark:bg-[var(--bg-dark)]"
       >
         <div className="h-16 flex items-center justify-between px-5 border-b font-bold text-indigo-600">
           <span>FE TEST | LÊ XUÂN HIẾU</span>
@@ -104,14 +114,14 @@ function AdminDashboardLayout() {
       </Drawer>
 
       <Layout>
-        <Header className="flex items-center justify-between bg-white/80 backdrop-blur border-b px-4 lg:px-6 sticky top-0 z-10">
+        <Header className="bg-white dark:bg-[var(--bg-dark)] flex items-center justify-between backdrop-blur border-b px-4 lg:px-6 sticky top-0 z-10">
           <div className="flex items-center gap-2">
             <Button
               type="text"
               onClick={() => setOpenMobile(true)}
               className="lg:hidden flex items-center justify-center h-10 w-10 rounded-xl hover:bg-gray-100"
             >
-              <MenuOutlined className="text-lg text-gray-700" />
+              <MenuOutlined className="text-lg text-gray-700 dark:text-white" />
             </Button>
 
             <Button
@@ -122,15 +132,17 @@ function AdminDashboardLayout() {
               {collapsed ? <RightOutlined /> : <LeftOutlined />}
             </Button>
 
-            <h2 className="text-lg font-bold text-gray-800 ml-2">
+            <h2 className="text-lg font-bold text-gray-800 dark:text-white ml-2 mb-0">
               {title}
             </h2>
           </div>
-
+          <div>
+            <ThemeToggle/>
+          </div>
         </Header>
 
-        <Content className="p-4 lg:p-6 bg-[#f5f7fb]">
-          <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 min-h-[calc(100vh-112px)]">
+        <Content className="p-4 lg:p-6 bg-slate-50 dark:bg-[#222e3c]">
+          <div className="bg-white dark:bg-[#141414] rounded-2xl shadow-sm p-4 sm:p-6">
             <Outlet />
           </div>
         </Content>

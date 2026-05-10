@@ -23,7 +23,7 @@ const TableAction = <T,>({
         <Tooltip title="Chỉnh sửa">
           <Button
             type="text"
-            icon={<EditOutlined className="text-blue-500" />}
+            icon={<EditOutlined className="text-blue-500" style={{fontSize:18}}/>}
             onClick={() => onClickEdit(record)}
             className="hover:bg-blue-50"
           />
@@ -41,7 +41,7 @@ const TableAction = <T,>({
             <Button
               type="text"
               danger
-              icon={<DeleteOutlined />}
+              icon={<DeleteOutlined style={{fontSize:18}}/>}
               className="hover:bg-red-50"
             />
           </Popconfirm>

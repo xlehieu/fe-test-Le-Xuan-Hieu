@@ -1,12 +1,14 @@
-import { Button, DatePicker, Input, Row, Col } from "antd";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setFilter, resetFilters } from "../slices/taskSlice";
+import TagSelect from "@/components/ui/TagSelect";
 import { useOnChangeDebounce } from "@/hooks/useOnChangeDebounce";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { Task } from "@/types/task.type";
+import {
+  ReloadOutlined
+} from "@ant-design/icons";
+import { Button, Col, DatePicker, Input, Row } from "antd";
 import dayjs from "dayjs";
 import { taskPriorityOptions, taskStatusOptions } from "../constants/taskConst";
-import TagSelect from "@/components/ui/TagSelect";
-import { Task } from "@/types/task.type";
-
+import { resetFilters, setFilter } from "../slices/taskSlice";
 const { RangePicker } = DatePicker;
 
 const TaskFilter = () => {
@@ -92,14 +94,14 @@ const TaskFilter = () => {
       </Col>
 
       {/* RESET BUTTON */}
-      <Col xs={24} sm={24} md={6} lg={8}>
+      <Col xs={24} md={6}>
         {hasActiveFilters && (
           <Button
             danger
             onClick={() => dispatch(resetFilters())}
             className="w-full"
           >
-            Đặt lại
+            <ReloadOutlined />Đặt lại
           </Button>
         )}
       </Col>

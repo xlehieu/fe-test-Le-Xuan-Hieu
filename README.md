@@ -1,73 +1,37 @@
-# React + TypeScript + Vite
+## Cài đặt và Chạy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+```bash
+# Clone repository
+git clone https://github.com/xlehieu/fe-test-Le-Xuan-Hieu.git
+cd fe-test-Le-Xuan-Hieu
 
-Currently, two official plugins are available:
+# Cài đặt dependencies
+npm install
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+# Chạy dev
+npm run dev
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Build và preview luôn ạ
+npm run quick-preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tính năng
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Tính năng đã làm theo yêu cầu bài test
+- **Feat dashboard**
+    - Thống kê 4 thẻ Tổng task, Todo, In Progress, Done
+    - Thanh Progress hoặc biểu đồ thể hiện tỷ lệ theo trạng thái
+    - Danh sách 5 task được tạo gần nhất
+    -   => Lấy từ taskSlice dùng createSelector, mỗi thứ có component riêng
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Feat task**
+    - Tạo Table danh sách task (component TaskList)
+    - Tách component filter, làm component children trong TaskList
+    - Logic của filter được dùng trong redux selector
+    - Modal thêm/sửa task dùng Form có dùng generic
+    - Các component select status, priority được tái sử dụng (ở filter và form)
+    - Update status inline trong taskList
+
+- **Custom hook**
+    - Custom hook useOnChangeDebounce để khi onChange value, debounce xong thì gọi callback => lợi ích đỡ phải đặt thêm state, useDebounce, useEffect có dependencies là valueDebounce
+    - Custom hook useTheme để lấy theme từ localstorage return về hàm toggle và isDark và add class dark vào thẻ html => Tailwind có thể dùng, ConfigProvider Antd cũng dùng

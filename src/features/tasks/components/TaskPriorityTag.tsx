@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { Tag } from "antd";
 import { Task } from "@/types/task.type";
-import { taskPriorityConfig } from "../constants/taskConst";
+import { taskPriorityMap } from "../constants/taskConst";
 
 interface TaskPriorityTagProps {
   priority: Task["priority"];
@@ -12,8 +12,7 @@ interface TaskPriorityTagProps {
 function TaskPriorityTag({
   priority,
 }: TaskPriorityTagProps) {
-  const { color, label,labelVi } =
-    taskPriorityConfig[priority];
+  const { color, label,labelVi } = taskPriorityMap[priority];
 
   return (
     <Tag

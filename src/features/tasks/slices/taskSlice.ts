@@ -1,14 +1,18 @@
 import { MOCK_TASKS } from '@/mock/task.mock';
 import { RootState } from '@/store';
 import { Task } from '@/types/task.type';
+import { normalizeText } from '@/utils/helpers';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import isBetween from "dayjs/plugin/isBetween";
+
+dayjs.extend(isBetween);
 interface TasksState {
   items: Task[];
   filters: {
     searchText: string;
-    status: ("todo" | "in_progress" | "done")[];
-    priority: "low" | "medium" | "high" | "all";
+    status: Task["status"][];
+    priority: Task["priority"] | "all";
     dateRange: [string, string] | null;
   };
   pagination: {
@@ -82,24 +86,43 @@ export const selectFilteredTasks = createSelector(
   [selectAllTasks, selectFilters],
   (items, filters) => {
     const { searchText, status, priority, dateRange } = filters;
-    
+
+    const normalizedSearch = normalizeText(searchText);
+
     return items.filter((task) => {
-      const matchesSearch = task.title.toLowerCase().includes(searchText.toLowerCase()) || 
-                           task.description?.toLowerCase().includes(searchText.toLowerCase());
-      
-      const matchesStatus = status.length === 0 || status.includes(task.status);
-      
-      const matchesPriority = priority === 'all' || task.priority === priority;
-      
+      const title = normalizeText(task.title);
+      const description = normalizeText(task.description || "");
+
+      const matchesSearch =
+        title.includes(normalizedSearch) ||
+        description.includes(normalizedSearch);
+
+      const matchesStatus =
+        status.length === 0 || status.includes(task.status);
+
+      const matchesPriority =
+        priority === "all" || task.priority === priority;
+
       let matchesDate = true;
-      if (dateRange && task.dueDate) {
-        const taskDate = new Date(task.dueDate).getTime();
-        const start = new Date(dateRange[0]).getTime();
-        const end = new Date(dateRange[1]).getTime();
-        matchesDate = taskDate >= start && taskDate <= end;
+      if (dateRange) {
+        // Nếu có filter date, bắt buộc phải có dueDate
+        if (!task.dueDate) {
+          console.log("OK")
+          matchesDate = false;
+        } else {
+          const taskDate = dayjs(task.dueDate);
+          const start = dayjs(dateRange[0]);
+          const end = dayjs(dateRange[1]);
+          matchesDate = taskDate.isBetween(start, end, null, "[]");
+        }
       }
 
-      return matchesSearch && matchesStatus && matchesPriority && matchesDate;
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesPriority &&
+        matchesDate
+      );
     });
   }
 );

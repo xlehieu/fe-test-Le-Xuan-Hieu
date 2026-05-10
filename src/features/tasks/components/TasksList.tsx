@@ -2,72 +2,96 @@ import TableAction from "@/components/ui/TableAction";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Task } from "@/types/task.type";
 import { delay } from "@/utils/helpers";
-import { AppstoreOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, message, Popconfirm, Select, Table, Typography } from "antd";
+import {
+  AppstoreOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import {
+  Button,
+  message,
+  Popconfirm,
+  Table,
+  Typography,
+  Empty,
+  Card,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useState } from "react";
+import TagSelect from "../../../components/ui/TagSelect";
 import {
   deleteManyTasks,
   deleteTask,
   selectPaginatedTasks,
   setPage,
-  updateTaskStatus
+  updateTaskStatus,
 } from "../slices/taskSlice";
 import TaskModal from "./TaskModal";
 import TaskPriorityTag from "./TaskPriorityTag";
-import TaskStatusTag from "./TaskStatusTag";
+import { taskStatusOptions } from "../constants/taskConst";
+import TaskFilter from "./TaskFilter";
 
 const { Text } = Typography;
 
-// Map trọng số để sort cột Priority
 const priorityWeight = { low: 1, medium: 2, high: 3 };
 
 const TaskList = () => {
-  // khúc này cho em xin phép đặt cả total nữa ạ cho giống api thật ạ
-  // hiển thị ở table cũng dễ hơn ạ
   const { data: taskList, total } = useAppSelector(selectPaginatedTasks);
   const [taskDetail, setTaskDetail] = useState<Partial<Task> | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const dispatch = useAppDispatch();
+
   const handleConfirmDelete = useCallback(
     async (data: Task) => {
       try {
         await delay();
         dispatch(deleteTask(data.id));
+        message.success("Xóa task thành công");
       } catch (err) {
         message.error("Xóa thất bại");
       }
     },
     [dispatch],
   );
+
   const handleDeleteSelected = useCallback(async () => {
     try {
       await delay();
       dispatch(deleteManyTasks(selectedRowKeys));
+      setSelectedRowKeys([]);
+      message.success(`Xóa ${selectedRowKeys.length} task thành công`);
     } catch (err) {
       message.error("Xóa nhiều task thất bại");
     }
   }, [dispatch, selectedRowKeys]);
+
   const rowSelection: TableRowSelection<Task> = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys) => {
       setSelectedRowKeys(newSelectedRowKeys as string[]);
     },
-    selections: true,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
   };
-  //region config columns
+
   const columns = useMemo<ColumnsType<Task>>(
     () => [
       {
         title: "Tiêu đề",
         dataIndex: "title",
         key: "title",
-        // Sort theo thứ tự chữ cái của Tiêu đề
         sorter: (a, b) => a.title.localeCompare(b.title),
+        width: "30%",
         render: (text) => (
-          <Text strong className="text-slate-700">
+          <Text
+            strong
+            className="text-slate-700 hover:text-blue-600 transition-colors"
+          >
             {text}
           </Text>
         ),
@@ -77,11 +101,11 @@ const TaskList = () => {
         dataIndex: "status",
         key: "status",
         width: 180,
-
         render: (status: Task["status"], record) => (
-          <Select
+          <TagSelect
+            options={taskStatusOptions}
             value={status}
-            size="small"
+            size="middle"
             className="w-full"
             onChange={(value: Task["status"]) => {
               try {
@@ -94,20 +118,6 @@ const TaskList = () => {
                 message.success("Cập nhật trạng thái thành công");
               } catch (err) {}
             }}
-            options={[
-              {
-                value: "todo",
-                label: <TaskStatusTag status="todo" />,
-              },
-              {
-                value: "in_progress",
-                label: <TaskStatusTag status="in_progress" />,
-              },
-              {
-                value: "done",
-                label: <TaskStatusTag status="done" />,
-              },
-            ]}
           />
         ),
       },
@@ -115,8 +125,7 @@ const TaskList = () => {
         title: "Độ ưu tiên",
         dataIndex: "priority",
         key: "priority",
-        width: 120,
-        // Sort theo trọng số quy định (low -> medium -> high)
+        width: 130,
         sorter: (a, b) =>
           priorityWeight[a.priority] - priorityWeight[b.priority],
         render: (priority: Task["priority"]) => (
@@ -124,24 +133,28 @@ const TaskList = () => {
         ),
       },
       {
-        title: "Người được giao",
+        title: <span className="whitespace-nowrap">Người được giao</span>,
         dataIndex: "assignee",
         key: "assignee",
-        width: 160,
+        width: 180,
+        ellipsis: false,
         render: (assignee) => (
           <Text
-            className={assignee ? "text-slate-600" : "text-slate-400 italic"}
+            className={`whitespace-nowrap ${
+              assignee
+                ? "text-emerald-600 font-medium"
+                : "text-slate-400 italic"
+            }`}
           >
             {assignee || "Chưa giao"}
           </Text>
         ),
       },
       {
-        title: "Hạn chót",
+        title: <span className="whitespace-nowrap">Hạn chót</span>,
         dataIndex: "dueDate",
         key: "dueDate",
         width: 150,
-        // Sort theo thời gian
         sorter: (a, b) => {
           const dateA = a.dueDate ? dayjs(a.dueDate).valueOf() : 0;
           const dateB = b.dueDate ? dayjs(b.dueDate).valueOf() : 0;
@@ -154,7 +167,9 @@ const TaskList = () => {
           return (
             <Text
               className={
-                isOverdue ? "text-red-500 font-medium" : "text-slate-600"
+                isOverdue
+                  ? "text-red-600 font-semibold bg-red-50 px-2 py-1 rounded"
+                  : "text-slate-600"
               }
             >
               {dayjs(dueDate).format("DD/MM/YYYY")}
@@ -164,11 +179,9 @@ const TaskList = () => {
       },
       {
         title: (
-          <>
-            <div className="flex justify-center">
-              <AppstoreOutlined />
-            </div>
-          </>
+          <div className="flex justify-center">
+            <AppstoreOutlined />
+          </div>
         ),
         key: "actions",
         width: 120,
@@ -186,68 +199,97 @@ const TaskList = () => {
     ],
     [setTaskDetail, handleConfirmDelete],
   );
+
   const handleCancelModal = useCallback(() => {
     setTaskDetail(null);
   }, []);
-  return (
-    <>
-      <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800">
-          Danh sách công việc
-        </h2>
-        <div className="flex gap-2">
-          {selectedRowKeys.length > 0 && (
-            <Popconfirm
-              title="Xóa dữ liệu"
-              description="Bạn có chắc muốn xóa không?"
-              okText="Xóa"
-              cancelText="Hủy"
-              onConfirm={handleDeleteSelected}
-            >
-              <Button danger>Xóa {selectedRowKeys.length} task</Button>
-            </Popconfirm>
-          )}
 
-          <Button
-            type="primary"
-            className="rounded-lg"
-            onClick={() => {
-              setTaskDetail({});
-            }}
-          >
-            <PlusOutlined /> Thêm Task
-          </Button>
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="shadow-sm border-slate-200/60">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+          {/* Filter Section */}
+          <div className="flex-1 w-full">
+            <TaskFilter />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto shrink-0">
+            <Button
+              type="primary"
+              className="w-full sm:w-auto"
+              onClick={() => {
+                setTaskDetail({});
+              }}
+              icon={<PlusOutlined />}
+            >
+              Thêm Task
+            </Button>
+
+            {selectedRowKeys.length > 0 && (
+              <Popconfirm
+                title="Xóa dữ liệu"
+                description={`Bạn có chắc muốn xóa ${selectedRowKeys.length} task này không?`}
+                okText="Xóa"
+                okType="danger"
+                cancelText="Hủy"
+                onConfirm={handleDeleteSelected}
+              >
+                <Button
+                  danger
+                  className="w-full sm:w-auto"
+                  icon={<DeleteOutlined />}
+                >
+                  Xóa {selectedRowKeys.length}
+                </Button>
+              </Popconfirm>
+            )}
+          </div>
         </div>
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={taskList}
-        rowSelection={rowSelection}
-        rowKey="id"
-        // Cấu hình phân trang theo yêu cầu
-        pagination={{
-          pageSize: 10,
-          total,
-          showTotal: (total) => (
-            <span className="font-medium text-slate-500">
-              Tổng số: {total} bản ghi
-            </span>
-          ),
-          onChange(page) {
-            dispatch(setPage(page));
-          },
-          showSizeChanger: false,
-        }}
-        scroll={{ x: 800 }}
-        className="custom-table"
-      />
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+        <Table
+          columns={columns}
+          dataSource={taskList}
+          rowSelection={rowSelection}
+          rowKey="id"
+          pagination={{
+            pageSize: 10,
+            total,
+            showTotal: (total) => (
+              <span className="text-sm font-medium text-slate-500">
+                Hiển thị {Math.min(10, total)} / {total} bản ghi
+              </span>
+            ),
+            onChange(page) {
+              dispatch(setPage(page));
+            },
+            showSizeChanger: false,
+            align: "center",
+          }}
+          scroll={{ x: 900 }}
+          className="custom-task-table"
+          locale={{
+            emptyText: (
+              <Empty description="Không có công việc nào" className="py-8" />
+            ),
+          }}
+          style={{
+            borderRadius: "0.75rem",
+          }}
+        />
+      </div>
+
+      {/* Task Modal */}
       <TaskModal
         initialData={taskDetail}
         open={!!taskDetail}
         onCancel={handleCancelModal}
       />
-    </>
+    </div>
   );
 };
 

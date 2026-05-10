@@ -6,7 +6,9 @@ import { useAppDispatch } from "@/store/hooks";
 import { addTask, updateTask } from "../slices/taskSlice";
 import { delay } from "@/utils/helpers";
 import { v7 as uuidv7 } from "uuid";
-import { taskPriorityConfig, taskStatusConfig } from "../constants/taskConst";
+
+import TagSelect from "../../../components/ui/TagSelect";
+import { taskPriorityOptions, taskStatusOptions } from "../constants/taskConst";
 interface TaskModalProps {
   open: boolean;
   onCancel: () => void;
@@ -87,7 +89,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       okText={isEdit ? "Cập nhật" : "Tạo mới"}
       cancelText="Hủy"
       width={600}
-      destroyOnClose // Dọn dẹp DOM và state form khi đóng Modal
+      destroyOnHidden // Dọn dẹp DOM và state form khi đóng Modal
     >
       <Form form={form} layout="vertical" className="mt-4" onFinish={onFinish}>
         <Form.Item<TaskPayload>
@@ -108,15 +110,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             label="Trạng thái"
             rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
           >
-            <Select
-              size="large"
-              options={Object.entries(taskStatusConfig).map(
-                ([value, config]) => ({
-                  value,
-                  label: <Tag color={config.color}>{config.labelVi} ({config.label})</Tag>,
-                }),
-              )}
-            />
+            <TagSelect options={taskStatusOptions}/>
           </Form.Item>
 
           <Form.Item<TaskPayload>
@@ -124,15 +118,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             label="Độ ưu tiên"
             rules={[{ required: true, message: "Vui lòng chọn độ ưu tiên!" }]}
           >
-            <Select
-              size="large"
-              options={Object.entries(taskPriorityConfig).map(
-                ([value, config]) => ({
-                  value,
-                  label: <Tag color={config.color}>{config.labelVi} ({config.label})</Tag>,
-                }),
-              )}
-            />
+            <TagSelect options={taskPriorityOptions}/>
           </Form.Item>
         </div>
 

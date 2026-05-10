@@ -1,9 +1,8 @@
+import { taskStatusMap } from "@/features/tasks/constants/taskConst";
 import { selectLatestTasks } from "@/features/tasks/slices/taskSlice";
 import { useAppSelector } from "@/store/hooks";
 import { Task } from "@/types/task.type";
-import {
-  CalendarOutlined
-} from "@ant-design/icons";
+import { CalendarOutlined } from "@ant-design/icons";
 import { Card, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -36,16 +35,11 @@ const DashboardLatestTask = memo(() => {
         key: "status",
         width: 120,
         render: (status: Task["status"]) => {
-          let color = "blue";
-          let label = status.toUpperCase().replace("_", " ");
-
-          if (status === "todo") color = "gold";
-          if (status === "in_progress") color = "cyan";
-          if (status === "done") color = "green";
+          const config = taskStatusMap[status];
 
           return (
-            <Tag color={color} className="rounded-full px-3 font-medium">
-              {label}
+            <Tag color={config.color} className="rounded-full px-3 font-medium">
+              {config.labelVi}
             </Tag>
           );
         },
@@ -86,5 +80,5 @@ const DashboardLatestTask = memo(() => {
     </Card>
   );
 });
-DashboardLatestTask.displayName="DashboardLatestTask"
+DashboardLatestTask.displayName = "DashboardLatestTask";
 export default DashboardLatestTask;
